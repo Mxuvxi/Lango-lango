@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lango</string>
+    <string name="cd_lango_logo">Logo Lango, le pont des compétences</string>
+    <string name="cd_audio_guide">Écouter le guide audio</string>
+    <string name="cd_sync_status">État de synchronisation hors-ligne</string>
+    <string name="cd_settings">Paramètres et alertes SMS</string>
+</resources>

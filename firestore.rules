@@ -1,0 +1,209 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function hasOnlyFields(allowed) {
+      return incoming().keys().hasOnly(allowed);
+    }
+
+    function hasRequiredFields(required) {
+      return incoming().keys().hasAll(required);
+    }
+
+    function isValidNonEmptyString(val, maxLen) {
+      return val is string && val.size() > 0 && val.size() <= maxLen;
+    }
+
+    function isValidOptionalString(val, maxLen) {
+      return val is string && val.size() <= maxLen;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    function isUnchanged(field) {
+      return !(field in incoming()) || incoming()[field] == existing()[field];
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUserPassport(data, userId) {
+      return hasOnlyFields([
+        'uid', 'prenom', 'telephone', 'ville', 'quartier', 'languePref', 'role',
+        'metierPrincipal', 'niveauInitial', 'objectif', 'bioCourte', 'disponible',
+        'scoreFiabilite', 'consentementLoi24001', 'badgesCount', 'verifiedBadgesCount',
+        'portfolioCount', 'createdAt', 'updatedAt'
+      ])
+      && data.uid is string && data.uid == userId
+      && isValidNonEmptyString(data.prenom, 80)
+      && isValidOptionalString(data.telephone, 30)
+      && isValidNonEmptyString(data.ville, 60)
+      && isValidOptionalString(data.quartier, 80)
+      && data.languePref in ['FR', 'SG']
+      && data.role in ['JEUNE', 'ARTISAN', 'EMPLOYEUR']
+      && isValidOptionalString(data.metierPrincipal, 80)
+      && isValidOptionalString(data.niveauInitial, 40)
+      && isValidOptionalString(data.objectif, 40)
+      && isValidOptionalString(data.bioCourte, 400)
+      && data.disponible is bool
+      && data.scoreFiabilite is int && data.scoreFiabilite >= 0 && data.scoreFiabilite <= 100
+      && data.consentementLoi24001 is bool
+      && data.badgesCount is int && data.badgesCount >= 0 && data.badgesCount <= 100
+      && data.verifiedBadgesCount is int && data.verifiedBadgesCount >= 0 && data.verifiedBadgesCount <= 100
+      && data.portfolioCount is int && data.portfolioCount >= 0 && data.portfolioCount <= 500
+      && isValidTimestamp(data.createdAt)
+      && isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidCaisseOperation(data, userId) {
+      return hasOnlyFields([
+        'userId', 'type', 'categorie', 'montantFcfa', 'clientOuNote',
+        'moyenPaiement', 'createdAt', 'updatedAt'
+      ])
+      && data.userId is string && data.userId == userId
+      && data.type in ['ENTREE', 'SORTIE']
+      && isValidNonEmptyString(data.categorie, 80)
+      && data.montantFcfa is int && data.montantFcfa >= 0 && data.montantFcfa <= 100000000
+      && isValidOptionalString(data.clientOuNote, 200)
+      && data.moyenPaiement in ['ESPECES', 'ORANGE_MONEY', 'TELECEL_MONEY']
+      && isValidTimestamp(data.createdAt)
+      && isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidDevis(data, userId) {
+      return hasOnlyFields([
+        'userId', 'referenceCode', 'clientNom', 'clientTel', 'descriptionTravaux',
+        'montantFcfa', 'acompteFcfa', 'statut', 'moyenPaiement', 'createdAt', 'updatedAt'
+      ])
+      && data.userId is string && data.userId == userId
+      && isValidNonEmptyString(data.referenceCode, 30)
+      && isValidNonEmptyString(data.clientNom, 80)
+      && isValidOptionalString(data.clientTel, 30)
+      && isValidNonEmptyString(data.descriptionTravaux, 300)
+      && data.montantFcfa is int && data.montantFcfa >= 0 && data.montantFcfa <= 100000000
+      && data.acompteFcfa is int && data.acompteFcfa >= 0 && data.acompteFcfa <= data.montantFcfa
+      && data.statut in ['BROUILLON', 'ENVOYE', 'PAYE']
+      && data.moyenPaiement in ['ESPECES', 'ORANGE_MONEY', 'TELECEL_MONEY']
+      && isValidTimestamp(data.createdAt)
+      && isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidOpportunite(data) {
+      return hasOnlyFields([
+        'authorUid', 'employeurNom', 'titre', 'type', 'ville', 'quartier',
+        'competenceId', 'remunerationFcfa', 'descriptionCourte', 'contactTel',
+        'active', 'createdAt', 'updatedAt'
+      ])
+      && isValidNonEmptyString(data.authorUid, 128)
+      && isValidNonEmptyString(data.employeurNom, 100)
+      && isValidNonEmptyString(data.titre, 120)
+      && data.type in ['EMPLOI', 'STAGE', 'MISSION', 'SERVICE']
+      && isValidNonEmptyString(data.ville, 60)
+      && isValidOptionalString(data.quartier, 80)
+      && isValidNonEmptyString(data.competenceId, 60)
+      && data.remunerationFcfa is int && data.remunerationFcfa >= 0 && data.remunerationFcfa <= 100000000
+      && isValidNonEmptyString(data.descriptionCourte, 500)
+      && isValidOptionalString(data.contactTel, 30)
+      && data.active is bool
+      && isValidTimestamp(data.createdAt)
+      && isValidTimestamp(data.updatedAt);
+    }
+
+    // ===============================================================
+    // Collections
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && hasRequiredFields([
+          'uid', 'prenom', 'telephone', 'ville', 'quartier', 'languePref', 'role',
+          'metierPrincipal', 'niveauInitial', 'objectif', 'bioCourte', 'disponible',
+          'scoreFiabilite', 'consentementLoi24001', 'badgesCount', 'verifiedBadgesCount',
+          'portfolioCount', 'createdAt', 'updatedAt'
+        ])
+        && isValidUserPassport(incoming(), userId);
+      allow update: if isOwner(userId)
+        && isValidUserPassport(incoming(), userId)
+        && isUnchanged('uid')
+        && isUnchanged('createdAt');
+      allow delete: if isOwner(userId);
+
+      match /caisseOperations/{opId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && hasRequiredFields([
+            'userId', 'type', 'categorie', 'montantFcfa', 'clientOuNote',
+            'moyenPaiement', 'createdAt', 'updatedAt'
+          ])
+          && isValidCaisseOperation(incoming(), userId);
+        allow update: if isOwner(userId)
+          && isValidCaisseOperation(incoming(), userId)
+          && isUnchanged('userId')
+          && isUnchanged('createdAt');
+        allow delete: if isOwner(userId);
+      }
+
+      match /devis/{devisId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && hasRequiredFields([
+            'userId', 'referenceCode', 'clientNom', 'clientTel', 'descriptionTravaux',
+            'montantFcfa', 'acompteFcfa', 'statut', 'moyenPaiement', 'createdAt', 'updatedAt'
+          ])
+          && isValidDevis(incoming(), userId);
+        allow update: if isOwner(userId)
+          && isValidDevis(incoming(), userId)
+          && isUnchanged('userId')
+          && isUnchanged('createdAt');
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    match /opportunites/{oppId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && hasRequiredFields([
+          'authorUid', 'employeurNom', 'titre', 'type', 'ville', 'quartier',
+          'competenceId', 'remunerationFcfa', 'descriptionCourte', 'contactTel',
+          'active', 'createdAt', 'updatedAt'
+        ])
+        && incoming().authorUid == request.auth.uid
+        && isValidOpportunite(incoming());
+      allow update: if isSignedIn()
+        && existing().authorUid == request.auth.uid
+        && isUnchanged('authorUid')
+        && isUnchanged('createdAt')
+        && isValidOpportunite(incoming());
+      allow delete: if isSignedIn() && existing().authorUid == request.auth.uid;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

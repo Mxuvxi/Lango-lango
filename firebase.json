@@ -1,0 +1,13 @@
+{
+  "emulators": {
+    "firestore": {
+      "port": 8085
+    }
+  },
+  "firestore": [
+    {
+      "database": "ai-studio-android-lango-8d25654c-6786-4842-913a-62e4c9c73261",
+      "rules": "firestore.rules"
+    }
+  ]
+}

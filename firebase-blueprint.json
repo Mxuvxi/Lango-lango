@@ -1,0 +1,160 @@
+{
+  "entities": {
+    "UserPassport": {
+      "title": "UserPassport",
+      "description": "Cloud backup of a user's Lango Passport profile, badges summary, and Loi 24.001 consent state.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID matching the document ID." },
+        "prenom": { "type": "string", "description": "User first name or artisan display name." },
+        "telephone": { "type": "string", "description": "Optional phone number for SMS/USSD contact." },
+        "ville": { "type": "string", "description": "City in CAR (Bangui, Berberati, Bouar, etc.)." },
+        "quartier": { "type": "string", "description": "Neighborhood / district." },
+        "languePref": { "type": "string", "enum": ["FR", "SG"] },
+        "role": { "type": "string", "enum": ["JEUNE", "ARTISAN", "EMPLOYEUR"] },
+        "metierPrincipal": { "type": "string" },
+        "niveauInitial": { "type": "string" },
+        "objectif": { "type": "string" },
+        "bioCourte": { "type": "string" },
+        "disponible": { "type": "boolean" },
+        "scoreFiabilite": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "consentementLoi24001": { "type": "boolean" },
+        "badgesCount": { "type": "integer", "minimum": 0 },
+        "verifiedBadgesCount": { "type": "integer", "minimum": 0 },
+        "portfolioCount": { "type": "integer", "minimum": 0 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "uid",
+        "prenom",
+        "telephone",
+        "ville",
+        "quartier",
+        "languePref",
+        "role",
+        "metierPrincipal",
+        "niveauInitial",
+        "objectif",
+        "bioCourte",
+        "disponible",
+        "scoreFiabilite",
+        "consentementLoi24001",
+        "badgesCount",
+        "verifiedBadgesCount",
+        "portfolioCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CaisseOperation": {
+      "title": "CaisseOperation",
+      "description": "Cloud backup of an artisan cashbook entry or expense.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["ENTREE", "SORTIE"] },
+        "categorie": { "type": "string" },
+        "montantFcfa": { "type": "integer", "minimum": 0 },
+        "clientOuNote": { "type": "string" },
+        "moyenPaiement": { "type": "string", "enum": ["ESPECES", "ORANGE_MONEY", "TELECEL_MONEY"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "type",
+        "categorie",
+        "montantFcfa",
+        "clientOuNote",
+        "moyenPaiement",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DevisArtisan": {
+      "title": "DevisArtisan",
+      "description": "Cloud backup of an artisan quote or paid receipt.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "referenceCode": { "type": "string" },
+        "clientNom": { "type": "string" },
+        "clientTel": { "type": "string" },
+        "descriptionTravaux": { "type": "string" },
+        "montantFcfa": { "type": "integer", "minimum": 0 },
+        "acompteFcfa": { "type": "integer", "minimum": 0 },
+        "statut": { "type": "string", "enum": ["BROUILLON", "ENVOYE", "PAYE"] },
+        "moyenPaiement": { "type": "string", "enum": ["ESPECES", "ORANGE_MONEY", "TELECEL_MONEY"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "referenceCode",
+        "clientNom",
+        "clientTel",
+        "descriptionTravaux",
+        "montantFcfa",
+        "acompteFcfa",
+        "statut",
+        "moyenPaiement",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Opportunite": {
+      "title": "Opportunite",
+      "description": "Shared local opportunity posted by an employer, NGO, or client.",
+      "type": "object",
+      "properties": {
+        "authorUid": { "type": "string" },
+        "employeurNom": { "type": "string" },
+        "titre": { "type": "string" },
+        "type": { "type": "string", "enum": ["EMPLOI", "STAGE", "MISSION", "SERVICE"] },
+        "ville": { "type": "string" },
+        "quartier": { "type": "string" },
+        "competenceId": { "type": "string" },
+        "remunerationFcfa": { "type": "integer", "minimum": 0 },
+        "descriptionCourte": { "type": "string" },
+        "contactTel": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "authorUid",
+        "employeurNom",
+        "titre",
+        "type",
+        "ville",
+        "quartier",
+        "competenceId",
+        "remunerationFcfa",
+        "descriptionCourte",
+        "contactTel",
+        "active",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserPassport" },
+      "description": "Private owner-only Lango Passport cloud backup document."
+    },
+    "/users/{userId}/caisseOperations/{opId}": {
+      "schema": { "$ref": "#/entities/CaisseOperation" },
+      "description": "Private owner-only cashbook operations."
+    },
+    "/users/{userId}/devis/{devisId}": {
+      "schema": { "$ref": "#/entities/DevisArtisan" },
+      "description": "Private owner-only quotes and receipts."
+    },
+    "/opportunites/{oppId}": {
+      "schema": { "$ref": "#/entities/Opportunite" },
+      "description": "Community opportunities readable by signed-in users, writable only by authorUid."
+    }
+  }
+}

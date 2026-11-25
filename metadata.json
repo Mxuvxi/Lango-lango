@@ -1,0 +1,6 @@
+{
+  "name": "Lango",
+  "description": "Apprends. Prouve. Connecte-toi. Application mobile offline-first de micro-formations en sango, certification par les pairs et opportunités locales en République Centrafricaine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
