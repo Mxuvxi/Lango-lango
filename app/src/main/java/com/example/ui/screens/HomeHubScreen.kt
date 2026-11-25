@@ -136,6 +136,7 @@ fun HomeHubScreen(
     onOpenMobileMoney: () -> Unit,
     onOpenCaisseDevis: () -> Unit,
     onOpenCoachAi: () -> Unit,
+    onOpenAiNotesStudio: () -> Unit,
     onOpenEmployerSpace: () -> Unit,
     onOpenPublishOpportunity: () -> Unit,
     onTogglePackDownload: (ContenuPedagogiqueEntity) -> Unit,
@@ -347,6 +348,7 @@ fun HomeHubScreen(
                                 copy = copy,
                                 speaker = speaker,
                                 onOpenCoachAi = onOpenCoachAi,
+                                onOpenAiNotesStudio = onOpenAiNotesStudio,
                                 onTogglePackDownload = onTogglePackDownload,
                                 onOpenLesson = onOpenLesson
                             )
@@ -537,6 +539,7 @@ private fun LearnLibrarySection(
     copy: LangoCopy,
     speaker: LangoSpeakerState,
     onOpenCoachAi: () -> Unit,
+    onOpenAiNotesStudio: () -> Unit,
     onTogglePackDownload: (ContenuPedagogiqueEntity) -> Unit,
     onOpenLesson: (String) -> Unit
 ) {
@@ -609,6 +612,55 @@ private fun LearnLibrarySection(
                         modifier = Modifier.minimumInteractiveComponentSize()
                     ) {
                         Text(if (isSango) "Hunda" else "Ouvrir")
+                    }
+                }
+            }
+        }
+        item {
+            Card(
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onOpenAiNotesStudio)
+                    .testTag("open_ai_notes_studio_card")
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.AddAPhoto,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Studio IA : Notes & Photos ➔ Cours & Quiz",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Prenez en photo vos notes de cours ou écrivez-les. L'IA génère le cours, le quiz et analyse vos erreurs.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                    }
+                    Button(
+                        onClick = onOpenAiNotesStudio,
+                        modifier = Modifier.minimumInteractiveComponentSize()
+                    ) {
+                        Text("Créer")
                     }
                 }
             }

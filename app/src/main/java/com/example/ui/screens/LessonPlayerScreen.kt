@@ -56,10 +56,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.data.local.LessonContentCatalog
 import com.example.data.local.entity.BadgeEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
@@ -370,43 +372,83 @@ fun LessonPlayerScreen(
                     val qTitle = if (isSango) question.questionSg else question.questionFr
                     val options = if (isSango) question.optionsSg else question.optionsFr
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Rounded.Quiz,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (isSango) {
-                                "Hundango tene ${quizIdx + 1} / ${quiz.size}"
-                            } else {
-                                "Exercice pratique ${quizIdx + 1} / ${quiz.size}"
-                            },
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    OutlinedButton(
-                        onClick = { speakText(qTitle) },
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.minimumInteractiveComponentSize()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.AutoMirrored.Rounded.VolumeUp, contentDescription = null)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(if (isSango) "Ma hundango tene" else "Écouter la question")
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Rounded.Quiz,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isSango) {
+                                    "Hundango tene ${quizIdx + 1} / ${quiz.size}"
+                                } else {
+                                    "Question ${quizIdx + 1} / ${quiz.size}"
+                                },
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+
+                        OutlinedButton(
+                            onClick = { speakText(qTitle) },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.minimumInteractiveComponentSize()
+                        ) {
+                            Icon(Icons.AutoMirrored.Rounded.VolumeUp, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(if (isSango) "Diko" else "Écouter")
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(14.dp))
+
+                    // Prominent Question Card
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(18.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            if (!question.imageUrl.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = question.imageUrl,
+                                    contentDescription = "Illustration question",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(180.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                )
+                            }
+                            Text(
+                                text = qTitle,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = qTitle,
-                        style = MaterialTheme.typography.headlineSmall
+                        text = if (isSango) "Horo kiringo tongo ni:" else "Sélectionne la bonne réponse :",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     options.forEachIndexed { idx, optLabel ->
                         val isSelected = selectedAnswerIdx == idx

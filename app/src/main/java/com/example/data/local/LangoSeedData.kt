@@ -3,6 +3,7 @@ package com.example.data.local
 import com.example.data.local.entity.CompetenceEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
 import com.example.data.local.entity.OpportuniteEntity
+import com.example.data.local.entity.CandidatureRecueEntity
 
 object LangoSeedData {
 
@@ -52,6 +53,55 @@ object LangoSeedData {
             nomSg = "Bata nginza & Mobile Money",
             categorie = "Commerce",
             iconeKey = "commerce"
+        ),
+        CompetenceEntity(
+            id = "comp_photo",
+            nomFr = "Photographie & Reportage Pro",
+            nomSg = "Photo na video ti Afrika",
+            categorie = "Média",
+            iconeKey = "camera"
+        ),
+        CompetenceEntity(
+            id = "comp_cinema",
+            nomFr = "Réalisation & Vidéo Mobile",
+            nomSg = "Sarango video na smartphone",
+            categorie = "Média",
+            iconeKey = "movie"
+        ),
+        CompetenceEntity(
+            id = "comp_ia",
+            nomFr = "Intelligence Artificielle & Numérique",
+            nomSg = "IA na Kete Kua ti Digital",
+            categorie = "Numérique",
+            iconeKey = "ai"
+        ),
+        CompetenceEntity(
+            id = "comp_langues",
+            nomFr = "Langues & Communication Pro",
+            nomSg = "Amango na Tënë (Français/Anglais)",
+            categorie = "Communication",
+            iconeKey = "language"
+        ),
+        CompetenceEntity(
+            id = "comp_batiment",
+            nomFr = "Maçonnerie & Éco-Construction",
+            nomSg = "Lekengo da na sese",
+            categorie = "Bâtiment",
+            iconeKey = "building"
+        ),
+        CompetenceEntity(
+            id = "comp_sante",
+            nomFr = "Santé Communautaire & Secours",
+            nomSg = "Bata ngangu ti tere & Secours",
+            categorie = "Santé",
+            iconeKey = "health"
+        ),
+        CompetenceEntity(
+            id = "comp_mecanique",
+            nomFr = "Mécanique Moto & Entretien",
+            nomSg = "Lekengo Moto & Kua",
+            categorie = "Technique",
+            iconeKey = "moto"
         )
     )
 
@@ -115,6 +165,90 @@ object LangoSeedData {
             tailleKo = 1400,
             estTelecharge = false,
             audioDureeSec = 180
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_photo_1",
+            competenceId = "comp_photo",
+            titreFr = "Lumière naturelle & Cadrage Pro",
+            titreSg = "Mû ngangu ti wâ ti lâ nzoni",
+            resumeFr = "Maîtriser la Golden Hour, le contre-jour et la règle des tiers en reportage photo.",
+            resumeSg = "Mû ngangu ti wâ ti lâ na zia foto na ndo so alingbi.",
+            dureeMin = 15,
+            tailleKo = 3200,
+            estTelecharge = true,
+            audioDureeSec = 300
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_cinema_1",
+            competenceId = "comp_cinema",
+            titreFr = "Réalisation & Vidéo Mobile",
+            titreSg = "Sarango video na smartphone",
+            resumeFr = "Scénario, plans de coupe B-Roll et stabilité pour documentaires et reportages.",
+            resumeSg = "Sû mbeti ti video na kete plan ti fa kaye ti Afrika.",
+            dureeMin = 18,
+            tailleKo = 4100,
+            estTelecharge = false,
+            audioDureeSec = 360
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_ia_1",
+            competenceId = "comp_ia",
+            titreFr = "IA & Assistants Mobiles pour Entrepreneurs",
+            titreSg = "IA na Téléfone ti Lengo Kua",
+            resumeFr = "Utiliser l'intelligence artificielle pour rédiger des messages pro, devis et idées de business.",
+            resumeSg = "Sã IA ti sû mbeti ti kosa na mû wango ti biisi.",
+            dureeMin = 12,
+            tailleKo = 2100,
+            estTelecharge = false,
+            audioDureeSec = 250
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_langues_1",
+            competenceId = "comp_langues",
+            titreFr = "Français Pro & Anglais Commercial",
+            titreSg = "Français na Anglais ti Kua",
+            resumeFr = "Phrases clés pour négocier avec des clients, rédiger des factures et accueillir des touristes.",
+            resumeSg = "Tënë ti kapa na client, sû facture na tisa azo ti kodro nde.",
+            dureeMin = 15,
+            tailleKo = 2900,
+            estTelecharge = true,
+            audioDureeSec = 320
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_batiment_1",
+            competenceId = "comp_batiment",
+            titreFr = "Briques de Terre Stabilisée & Maçonnerie",
+            titreSg = "Lekengo da na sese na wen",
+            resumeFr = "Techniques durables de construction économique et résistante à la saison des pluies.",
+            resumeSg = "Lekengo da so aninga na ngoi ti ngu ti tï.",
+            dureeMin = 16,
+            tailleKo = 3500,
+            estTelecharge = false,
+            audioDureeSec = 340
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_sante_1",
+            competenceId = "comp_sante",
+            titreFr = "Premiers Secours & Eau Potable",
+            titreSg = "Batango tere na Ngu Nzoni",
+            resumeFr = "Gestes d'urgence de base, désinfection de l'eau et prévention des maladies courantes.",
+            resumeSg = "Mû maboko na zo so agomer na sukulungo ngu.",
+            dureeMin = 14,
+            tailleKo = 2600,
+            estTelecharge = false,
+            audioDureeSec = 290
+        ),
+        ContenuPedagogiqueEntity(
+            id = "pack_mecanique_1",
+            competenceId = "comp_mecanique",
+            titreFr = "Entretien & Réparation Moto Express",
+            titreSg = "Lekengo Moto na vidange",
+            resumeFr = "Vidange, tension de chaîne, changement de bougie et rustines pour motos-taxis (Djakarta).",
+            resumeSg = "Gbian mafuta ti moto, kanga chaîne na bougie.",
+            dureeMin = 15,
+            tailleKo = 3100,
+            estTelecharge = true,
+            audioDureeSec = 310
         )
     )
 
@@ -123,137 +257,83 @@ object LangoSeedData {
         return listOf(
             OpportuniteEntity(
                 id = "opp_1",
-                employeurNom = "Atelier Kéti Couture",
-                titre = "Aide-couturier(ère) pour tenues scolaires",
+                employeurNom = "Atelier Solaire Bangui",
+                titre = "Technicien installation kits solaires 12V",
                 type = "MISSION",
                 ville = "Bangui - PK5",
                 quartier = "PK5 Marché",
-                competenceId = "comp_couture",
+                competenceId = "comp_solaire",
                 remunerationFcfa = 45000,
-                descriptionCourte = "Mission de 3 semaines pour ourlets et assemblage. Machine fournie sur place.",
+                descriptionCourte = "Installation de 3 kits solaires pour des boutiques au marché central.",
                 contactTel = "+23675001122",
-                expireLe = nowMs + twoWeeks
+                expireLe = nowMs + twoWeeks,
+                estActive = true
             ),
             OpportuniteEntity(
                 id = "opp_2",
-                employeurNom = "ONG Lumière Oubangui",
-                titre = "Technicien(ne) pose kits solaires ruraux",
-                type = "EMPLOI",
+                employeurNom = "ONG Espoir Centrafrique",
+                titre = "Formateur transformation agroalimentaire manioc",
+                type = "STAGE",
                 ville = "Bimbo",
-                quartier = "Bimbo Centre",
-                competenceId = "comp_solaire",
-                remunerationFcfa = 85000,
-                descriptionCourte = "Installation et maintenance de kits 12V dans des centres communautaires.",
-                contactTel = "+23672003344",
-                expireLe = nowMs + twoWeeks
+                quartier = "Centre",
+                competenceId = "comp_agro",
+                remunerationFcfa = 60000,
+                descriptionCourte = "Accompagnement de groupements féminins pour le séchage hygiénique.",
+                contactTel = "+23672113344",
+                expireLe = nowMs + twoWeeks,
+                estActive = true
             ),
             OpportuniteEntity(
                 id = "opp_3",
-                employeurNom = "Kiosque Centrafrique Répare",
-                titre = "Apprenti(e) réparation smartphones",
-                type = "STAGE",
-                ville = "Bangui - Gobongo",
-                quartier = "Carrefour Gobongo",
-                competenceId = "comp_reparation",
-                remunerationFcfa = 30000,
-                descriptionCourte = "Stage rémunéré + prime par appareil réparé. Ouvert aux débutants motivés.",
-                contactTel = "+23675005566",
-                expireLe = nowMs + twoWeeks
-            ),
-            OpportuniteEntity(
-                id = "opp_4",
-                employeurNom = "Coopérative Femmes de Bouar",
-                titre = "Conditionnement pâte d'arachide",
-                type = "SERVICE",
-                ville = "Bouar",
-                quartier = "Quartier Haoussa",
-                competenceId = "comp_agro",
-                remunerationFcfa = 55000,
-                descriptionCourte = "Tri, torréfaction et mise en pot hygiénique pour livraison hebdomadaire.",
-                contactTel = "+23670007788",
-                expireLe = nowMs + twoWeeks
-            ),
-            OpportuniteEntity(
-                id = "opp_5",
-                employeurNom = "Boutique Sango Services",
-                titre = "Gérant(e) point Mobile Money & caisse",
+                employeurNom = "Studio Oubangui Média",
+                titre = "Caméraman & Photographe reportage culturel",
                 type = "EMPLOI",
-                ville = "Berbérati",
-                quartier = "Centre-ville",
-                competenceId = "comp_gestion",
-                remunerationFcfa = 65000,
-                descriptionCourte = "Tenue de caisse journalière Orange Money / Telecel Money et accueil clients.",
-                contactTel = "+23672009900",
-                expireLe = nowMs + twoWeeks
+                ville = "Bangui - Gobongo",
+                quartier = "Gobongo",
+                competenceId = "comp_photo",
+                remunerationFcfa = 75000,
+                descriptionCourte = "Couverture photo et vidéo mobile de festivals et reportages d'artisanat.",
+                contactTel = "+23670558899",
+                expireLe = nowMs + twoWeeks,
+                estActive = true
             )
         )
     }
 
-    fun buildReceivedCandidatures(
-        nowMs: Long = System.currentTimeMillis()
-    ): List<com.example.data.local.entity.CandidatureRecueEntity> {
+    fun buildReceivedCandidatures(): List<CandidatureRecueEntity> {
+        val now = System.currentTimeMillis()
         return listOf(
-            com.example.data.local.entity.CandidatureRecueEntity(
-                id = "cand_rec_1",
+            CandidatureRecueEntity(
+                id = "rec_cand_101",
                 opportuniteId = "opp_1",
-                candidatNom = "Prisca Yango",
-                candidatTel = "+23675214490",
+                candidatNom = "Benoit Kossi",
+                candidatTel = "+23675123456",
                 candidatVille = "Bangui - PK5",
-                metierLabel = "Couture & Retouches",
-                scoreFiabilite = 84,
-                badgesValides = 3,
-                messageCourt = "5 ans d'expérience sur machine industrielle et tenues scolaires à PK5.",
-                canalEnvoi = "APP",
-                statut = "ENVOYEE",
-                passeportCode = "LG-PY8401",
-                createdAt = nowMs - 3_600_000L
-            ),
-            com.example.data.local.entity.CandidatureRecueEntity(
-                id = "cand_rec_2",
-                opportuniteId = "opp_2",
-                candidatNom = "Benoît Kossi",
-                candidatTel = "+23672441805",
-                candidatVille = "Bimbo",
                 metierLabel = "Installation Solaire",
-                scoreFiabilite = 91,
-                badgesValides = 3,
-                messageCourt = "Certifié 3 tiers en pose de kits 12V et maintenance batterie.",
-                canalEnvoi = "SMS",
-                statut = "VUE",
-                noteEmployeur = "Bon profil technique à appeler demain",
-                passeportCode = "LG-BK9102",
-                createdAt = nowMs - 7_200_000L
-            ),
-            com.example.data.local.entity.CandidatureRecueEntity(
-                id = "cand_rec_3",
-                opportuniteId = "opp_3",
-                candidatNom = "Serge Ndongo",
-                candidatTel = "+23675983011",
-                candidatVille = "Bangui - Gobongo",
-                metierLabel = "Réparation Téléphone & Moto",
-                scoreFiabilite = 68,
+                scoreFiabilite = 85,
                 badgesValides = 2,
-                messageCourt = "Sait souder connecteurs de charge et diagnostiquer batteries au multimètre.",
-                canalEnvoi = "APP",
-                statut = "RETENUE",
-                noteEmployeur = "Convoqué pour essai atelier lundi 8h",
-                passeportCode = "LG-SN6803",
-                createdAt = nowMs - 18_000_000L
-            ),
-            com.example.data.local.entity.CandidatureRecueEntity(
-                id = "cand_rec_4",
-                opportuniteId = "opp_5",
-                candidatNom = "Nadège Mboli",
-                candidatTel = "+23672056177",
-                candidatVille = "Berbérati",
-                metierLabel = "Caisse & Mobile Money",
-                scoreFiabilite = 79,
-                badgesValides = 3,
-                messageCourt = "Gestion de kiosque Orange/Telecel Money depuis 2 ans sans erreur de caisse.",
+                messageCourt = "Certifié Lango 3/3, disponible immédiatement pour les kits solaires.",
                 canalEnvoi = "APP",
                 statut = "ENVOYEE",
-                passeportCode = "LG-NM7904",
-                createdAt = nowMs - 24_000_000L
+                noteEmployeur = "",
+                passeportCode = "LG-USR101",
+                createdAt = now - 3600000L
+            ),
+            CandidatureRecueEntity(
+                id = "rec_cand_102",
+                opportuniteId = "opp_3",
+                candidatNom = "Sarah Ngoko",
+                candidatTel = "+23672987654",
+                candidatVille = "Bangui - Gobongo",
+                metierLabel = "Photographie & Reportage Pro",
+                scoreFiabilite = 92,
+                badgesValides = 3,
+                messageCourt = "Expérience de 2 ans en reportage mobile et cadrage pro.",
+                canalEnvoi = "SMS",
+                statut = "RETENUE",
+                noteEmployeur = "Excellent portfolio, convoquée pour entretien.",
+                passeportCode = "LG-USR102",
+                createdAt = now - 7200000L
             )
         )
     }

@@ -111,6 +111,28 @@ service cloud.firestore {
       && isValidTimestamp(data.updatedAt);
     }
 
+    function isValidCoursGenereIa(data, userId) {
+      return hasOnlyFields([
+        'userId', 'titre', 'resume', 'notesEtudiant', 'coursOriginalId',
+        'coursOriginalTitre', 'photoLocaleUri', 'contenuCours', 'quizJson',
+        'scoreDernierQuiz', 'totalQuestionsQuiz', 'quizPasse', 'createdAt', 'updatedAt'
+      ])
+      && data.userId is string && data.userId == userId
+      && isValidNonEmptyString(data.titre, 150)
+      && isValidOptionalString(data.resume, 1000)
+      && isValidOptionalString(data.notesEtudiant, 5000)
+      && isValidOptionalString(data.coursOriginalId, 100)
+      && isValidOptionalString(data.coursOriginalTitre, 150)
+      && isValidOptionalString(data.photoLocaleUri, 500)
+      && isValidOptionalString(data.contenuCours, 20000)
+      && isValidOptionalString(data.quizJson, 20000)
+      && data.scoreDernierQuiz is int && data.scoreDernierQuiz >= 0 && data.scoreDernierQuiz <= 1000
+      && data.totalQuestionsQuiz is int && data.totalQuestionsQuiz >= 0 && data.totalQuestionsQuiz <= 1000
+      && data.quizPasse is bool
+      && isValidTimestamp(data.createdAt)
+      && isValidTimestamp(data.updatedAt);
+    }
+
     function isValidOpportunite(data) {
       return hasOnlyFields([
         'authorUid', 'employeurNom', 'titre', 'type', 'ville', 'quartier',
@@ -177,6 +199,22 @@ service cloud.firestore {
           && isValidDevis(incoming(), userId);
         allow update: if isOwner(userId)
           && isValidDevis(incoming(), userId)
+          && isUnchanged('userId')
+          && isUnchanged('createdAt');
+        allow delete: if isOwner(userId);
+      }
+
+      match /coursGeneresIa/{coursId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && hasRequiredFields([
+            'userId', 'titre', 'resume', 'notesEtudiant', 'coursOriginalId',
+            'coursOriginalTitre', 'photoLocaleUri', 'contenuCours', 'quizJson',
+            'scoreDernierQuiz', 'totalQuestionsQuiz', 'quizPasse', 'createdAt', 'updatedAt'
+          ])
+          && isValidCoursGenereIa(incoming(), userId);
+        allow update: if isOwner(userId)
+          && isValidCoursGenereIa(incoming(), userId)
           && isUnchanged('userId')
           && isUnchanged('createdAt');
         allow delete: if isOwner(userId);

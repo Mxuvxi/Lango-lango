@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.data.local.dao.CaisseDevisDao
 import com.example.data.local.dao.CoachDao
+import com.example.data.local.dao.CoursIaDao
 import com.example.data.local.dao.FormationDao
 import com.example.data.local.dao.OpportuniteDao
 import com.example.data.local.dao.PreuveDao
@@ -20,6 +21,7 @@ import com.example.data.local.entity.CandidatureRecueEntity
 import com.example.data.local.entity.CoachMessageEntity
 import com.example.data.local.entity.CompetenceEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
+import com.example.data.local.entity.CoursGenereIaEntity
 import com.example.data.local.entity.DevisEntity
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.OpportuniteEntity
@@ -47,9 +49,10 @@ import com.example.data.local.entity.VerificationEntity
         DevisEntity::class,
         CoachMessageEntity::class,
         NotificationEntity::class,
-        SyncOutboxEntity::class
+        SyncOutboxEntity::class,
+        CoursGenereIaEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class LangoDatabase : RoomDatabase() {
@@ -59,6 +62,7 @@ abstract class LangoDatabase : RoomDatabase() {
     abstract fun opportuniteDao(): OpportuniteDao
     abstract fun caisseDevisDao(): CaisseDevisDao
     abstract fun coachDao(): CoachDao
+    abstract fun coursIaDao(): CoursIaDao
     abstract fun syncOutboxDao(): SyncOutboxDao
 
     companion object {
@@ -155,6 +159,34 @@ abstract class LangoDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS cours_generes_ia (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        utilisateurId TEXT NOT NULL,
+                        titre TEXT NOT NULL,
+                        resume TEXT NOT NULL DEFAULT '',
+                        notesEtudiant TEXT NOT NULL DEFAULT '',
+                        coursOriginalId TEXT,
+                        coursOriginalTitre TEXT NOT NULL DEFAULT '',
+                        photoLocaleUri TEXT NOT NULL DEFAULT '',
+                        contenuCours TEXT NOT NULL DEFAULT '',
+                        quizJson TEXT NOT NULL DEFAULT '',
+                        scoreDernierQuiz INTEGER NOT NULL DEFAULT 0,
+                        totalQuestionsQuiz INTEGER NOT NULL DEFAULT 0,
+                        quizPasse INTEGER NOT NULL DEFAULT 0,
+                        createdAt INTEGER NOT NULL,
+                        syncStatus TEXT NOT NULL DEFAULT 'PENDING_UPLOAD',
+                        FOREIGN KEY(utilisateurId) REFERENCES utilisateurs(id) ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_cours_generes_ia_utilisateurId ON cours_generes_ia(utilisateurId)")
+            }
+        }
+
         fun getInstance(context: Context): LangoDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -162,7 +194,8 @@ abstract class LangoDatabase : RoomDatabase() {
                     LangoDatabase::class.java,
                     "lango_offline.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }
             }

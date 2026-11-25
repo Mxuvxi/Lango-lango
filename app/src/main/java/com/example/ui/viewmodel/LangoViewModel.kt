@@ -12,7 +12,9 @@ import com.example.data.local.entity.CandidatureRecueEntity
 import com.example.data.local.entity.CoachMessageEntity
 import com.example.data.local.entity.CompetenceEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
+import com.example.data.local.entity.CoursGenereIaEntity
 import com.example.data.local.entity.DevisEntity
+import java.util.UUID
 import com.example.data.local.entity.LangueCode
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.OpportuniteEntity
@@ -32,6 +34,7 @@ import com.example.ui.util.ImageCompressionUtil
 import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -765,6 +768,10 @@ class LangoViewModel(
             snap.devisList.forEach { devis ->
                 if (cloudSync.upsertDevis(devis).isFailure) allOk = false
             }
+            val coursGeneres = repository.observeCoursGeneres(currentUserId).first()
+            coursGeneres.forEach { cours ->
+                if (cloudSync.upsertCoursGenereIa(cours).isFailure) allOk = false
+            }
         }
         if (allOk) {
             repository.triggerSyncNow()
@@ -780,6 +787,59 @@ class LangoViewModel(
         viewModelScope.launch {
             val json = repository.exportPersonalDataJson()
             onJsonReady(json)
+        }
+    }
+
+    fun observeCoursGeneres(): Flow<List<CoursGenereIaEntity>> =
+        repository.observeCoursGeneres(currentUserId)
+
+    fun saveGeneratedCourse(
+        titre: String,
+        resume: String,
+        notesEtudiant: String,
+        coursOriginalId: String?,
+        coursOriginalTitre: String,
+        photoLocaleUri: String,
+        contenuCours: String,
+        quizJson: String,
+        onSaved: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val cours = CoursGenereIaEntity(
+                id = "crs_${UUID.randomUUID().toString().take(8)}",
+                utilisateurId = currentUserId,
+                titre = titre.ifBlank { "Cours IA personnalisé" },
+                resume = resume,
+                notesEtudiant = notesEtudiant,
+                coursOriginalId = coursOriginalId,
+                coursOriginalTitre = coursOriginalTitre,
+                photoLocaleUri = photoLocaleUri,
+                contenuCours = contenuCours,
+                quizJson = quizJson,
+                scoreDernierQuiz = 0,
+                totalQuestionsQuiz = 1,
+                quizPasse = false
+            )
+            repository.saveCoursGenere(cours)
+            if (canPushCloud()) {
+                cloudSync.upsertCoursGenereIa(cours)
+            }
+            onSaved()
+        }
+    }
+
+    fun updateGeneratedCourseQuiz(coursId: String, score: Int, total: Int) {
+        viewModelScope.launch {
+            repository.updateCoursGenereQuiz(coursId, score, total)
+        }
+    }
+
+    fun deleteGeneratedCourse(coursId: String) {
+        viewModelScope.launch {
+            repository.deleteCoursGenere(coursId)
+            if (canPushCloud()) {
+                cloudSync.deleteCoursGenereIa(coursId)
+            }
         }
     }
 

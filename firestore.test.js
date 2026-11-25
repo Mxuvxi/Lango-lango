@@ -93,6 +93,27 @@ function validOpportunitePayload(authorUid, overrides = {}) {
   };
 }
 
+function validCoursGenerePayload(userId, overrides = {}) {
+  const past = new Date(Date.now() - 5000);
+  return {
+    userId,
+    titre: "Éco-construction et Briques de Terre",
+    resume: "Résumé du cours généré par IA",
+    notesEtudiant: "Notes prises en classe de maçonnerie",
+    coursOriginalId: "pack_batiment_1",
+    coursOriginalTitre: "Briques de Terre Stabilisée",
+    photoLocaleUri: "file:///notes/note_1.jpg",
+    contenuCours: "Étapes 1, 2, 3 détaillées",
+    quizJson: "[{\"question\":\"Q1\"}]",
+    scoreDernierQuiz: 1,
+    totalQuestionsQuiz: 1,
+    quizPasse: true,
+    createdAt: past,
+    updatedAt: past,
+    ...overrides,
+  };
+}
+
 before(async () => {
   const rules = fs.readFileSync("./firestore.rules", "utf8");
   testEnv = await initializeTestEnvironment({
@@ -312,4 +333,38 @@ test("Opportunites allow signed-in reads/queries and enforce authorUid writes", 
     })
   );
   await assertSucceeds(oppRef.delete());
+});
+
+test("CoursGeneresIa subcollection enforces ownership and domain constraints", async () => {
+  const aliceDb = testEnv.authenticatedContext(ALICE_UID).firestore();
+  const bobDb = testEnv.authenticatedContext(BOB_UID).firestore();
+
+  const coursRef = aliceDb.collection("users").doc(ALICE_UID).collection("coursGeneresIa").doc("cours_01");
+  await assertSucceeds(coursRef.set(validCoursGenerePayload(ALICE_UID)));
+  await assertSucceeds(coursRef.get());
+  await assertSucceeds(
+    coursRef.update({
+      scoreDernierQuiz: 2,
+      updatedAt: new Date(Date.now() - 1000),
+    })
+  );
+
+  // Cross-user denied
+  await assertFails(bobDb.collection("users").doc(ALICE_UID).collection("coursGeneresIa").doc("cours_01").get());
+  await assertFails(
+    bobDb.collection("users").doc(ALICE_UID).collection("coursGeneresIa").doc("cours_01").update({
+      titre: "Hacked",
+      updatedAt: new Date(Date.now() - 1000),
+    })
+  );
+
+  // Cannot modify userId or createdAt
+  await assertFails(
+    coursRef.update({
+      userId: BOB_UID,
+      updatedAt: new Date(Date.now() - 1000),
+    })
+  );
+
+  await assertSucceeds(coursRef.delete());
 });

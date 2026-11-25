@@ -80,3 +80,23 @@ data class CloudOpportunite(
     @ServerTimestamp val createdAt: Timestamp? = null,
     @ServerTimestamp val updatedAt: Timestamp? = null
 )
+
+@Keep
+@IgnoreExtraProperties
+data class CloudCoursGenereIa(
+    @DocumentId val id: String = "",
+    val userId: String = "",
+    val titre: String = "",
+    val resume: String = "",
+    val notesEtudiant: String = "",
+    val coursOriginalId: String = "",
+    val coursOriginalTitre: String = "",
+    val photoLocaleUri: String = "",
+    val contenuCours: String = "",
+    val quizJson: String = "",
+    val scoreDernierQuiz: Int = 0,
+    val totalQuestionsQuiz: Int = 0,
+    val quizPasse: Boolean = false,
+    @ServerTimestamp val createdAt: Timestamp? = null,
+    @ServerTimestamp val updatedAt: Timestamp? = null
+)

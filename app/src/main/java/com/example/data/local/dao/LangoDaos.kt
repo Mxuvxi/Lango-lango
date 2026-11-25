@@ -12,6 +12,7 @@ import com.example.data.local.entity.CandidatureRecueEntity
 import com.example.data.local.entity.CoachMessageEntity
 import com.example.data.local.entity.CompetenceEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
+import com.example.data.local.entity.CoursGenereIaEntity
 import com.example.data.local.entity.DevisEntity
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.OpportuniteEntity
@@ -238,4 +239,25 @@ interface SyncOutboxDao {
         oldStatus: String = SyncStatus.PENDING_UPLOAD,
         newStatus: String = SyncStatus.SYNCED
     )
+}
+
+@Dao
+interface CoursIaDao {
+    @Query("SELECT * FROM cours_generes_ia WHERE utilisateurId = :userId ORDER BY createdAt DESC")
+    fun observeCoursGeneres(userId: String): Flow<List<CoursGenereIaEntity>>
+
+    @Query("SELECT * FROM cours_generes_ia WHERE utilisateurId = :userId ORDER BY createdAt DESC")
+    suspend fun getCoursGeneresOnce(userId: String): List<CoursGenereIaEntity>
+
+    @Query("SELECT * FROM cours_generes_ia WHERE id = :id LIMIT 1")
+    suspend fun getCoursById(id: String): CoursGenereIaEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertCours(cours: CoursGenereIaEntity)
+
+    @Query("UPDATE cours_generes_ia SET scoreDernierQuiz = :score, totalQuestionsQuiz = :total, quizPasse = 1, syncStatus = :syncStatus WHERE id = :id")
+    suspend fun updateQuizResult(id: String, score: Int, total: Int, syncStatus: String = SyncStatus.PENDING_UPLOAD)
+
+    @Query("DELETE FROM cours_generes_ia WHERE id = :id")
+    suspend fun deleteCours(id: String)
 }

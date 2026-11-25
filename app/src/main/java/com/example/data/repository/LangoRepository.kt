@@ -13,6 +13,7 @@ import com.example.data.local.entity.CandidatureRecueEntity
 import com.example.data.local.entity.CoachMessageEntity
 import com.example.data.local.entity.CompetenceEntity
 import com.example.data.local.entity.ContenuPedagogiqueEntity
+import com.example.data.local.entity.CoursGenereIaEntity
 import com.example.data.local.entity.DevisEntity
 import com.example.data.local.entity.NotificationEntity
 import com.example.data.local.entity.OpportuniteEntity
@@ -45,6 +46,7 @@ class LangoRepository(
     private val opportuniteDao = db.opportuniteDao()
     private val caisseDevisDao = db.caisseDevisDao()
     private val coachDao = db.coachDao()
+    private val coursIaDao = db.coursIaDao()
     private val syncOutboxDao = db.syncOutboxDao()
 
     val preferences: Flow<LangoPreferences> = prefsRepo.preferences
@@ -256,6 +258,31 @@ class LangoRepository(
             recalculateReliabilityScore(user.id)
         }
         return badge
+    }
+
+    fun observeCoursGeneres(userId: String): Flow<List<CoursGenereIaEntity>> =
+        coursIaDao.observeCoursGeneres(userId)
+
+    suspend fun saveCoursGenere(cours: CoursGenereIaEntity) {
+        coursIaDao.upsertCours(cours)
+        enqueueOutbox(
+            "COURS_GENERE_IA",
+            cours.id,
+            "{\"titre\":\"${cours.titre.replace("\"", "\\\"")}\",\"originalId\":\"${cours.coursOriginalId ?: ""}\"}"
+        )
+    }
+
+    suspend fun updateCoursGenereQuiz(coursId: String, score: Int, total: Int) {
+        coursIaDao.updateQuizResult(coursId, score, total)
+        enqueueOutbox(
+            "COURS_GENERE_IA",
+            coursId,
+            "{\"quizUpdated\":true,\"score\":$score,\"total\":$total}"
+        )
+    }
+
+    suspend fun deleteCoursGenere(coursId: String) {
+        coursIaDao.deleteCours(coursId)
     }
 
     suspend fun addPortfolioWork(

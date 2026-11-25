@@ -30,6 +30,7 @@ import com.example.data.repository.LangoRepository
 import com.example.ui.auth.LangoAuthScreen
 import com.example.ui.auth.authStateFlow
 import com.example.ui.auth.signOutGoogleSession
+import com.example.ui.screens.AiNotesToCourseScreen
 import com.example.ui.screens.CaisseDevisScreen
 import com.example.ui.screens.CoachAiScreen
 import com.example.ui.screens.DiagnosticScreen
@@ -70,6 +71,7 @@ object LangoRoutes {
     const val CAISSE_DEVIS = "caisse_devis"
     const val EMPLOYER_CANDIDATES = "employer_candidates"
     const val COACH_AI = "coach_ai"
+    const val AI_NOTES_STUDIO = "ai_notes_studio"
 
     fun lessonRoute(contenuId: String): String = "lesson/$contenuId"
     fun opportunityRoute(oppId: String): String = "opportunity/$oppId"
@@ -206,6 +208,7 @@ fun LangoNavGraph(
                         onOpenMobileMoney = { navController.navigate(LangoRoutes.MOBILE_MONEY) },
                         onOpenCaisseDevis = { navController.navigate(LangoRoutes.CAISSE_DEVIS) },
                         onOpenCoachAi = { navController.navigate(LangoRoutes.COACH_AI) },
+                        onOpenAiNotesStudio = { navController.navigate(LangoRoutes.AI_NOTES_STUDIO) },
                         onOpenEmployerSpace = { navController.navigate(LangoRoutes.EMPLOYER_CANDIDATES) },
                         onOpenPublishOpportunity = { navController.navigate(LangoRoutes.PUBLISH_OPPORTUNITY) },
                         onTogglePackDownload = { viewModel.togglePackDownload(it) },
@@ -420,6 +423,13 @@ fun LangoNavGraph(
                         onSendQuestion = { viewModel.sendCoachQuestion(it) },
                         onClearHistory = { viewModel.clearCoachHistory() },
                         onDismissError = { viewModel.dismissCoachError() }
+                    )
+                }
+
+                composable(LangoRoutes.AI_NOTES_STUDIO) {
+                    AiNotesToCourseScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() }
                     )
                 }
 

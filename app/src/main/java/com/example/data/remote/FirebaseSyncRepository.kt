@@ -3,6 +3,7 @@ package com.example.data.remote
 import android.content.Context
 import com.example.R
 import com.example.data.local.entity.CaisseOperationEntity
+import com.example.data.local.entity.CoursGenereIaEntity
 import com.example.data.local.entity.DevisEntity
 import com.example.data.local.entity.OpportuniteEntity
 import com.example.data.local.entity.ProfilEntity
@@ -275,6 +276,64 @@ class FirebaseSyncRepository(
         }
     }
 
+    suspend fun upsertCoursGenereIa(cours: CoursGenereIaEntity): Result<Unit> {
+        val uid = try {
+            requireUserId()
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+        val path = "users/$uid/coursGeneresIa/${cours.id}"
+        val docRef = db.collection("users").document(uid).collection("coursGeneresIa").document(cours.id)
+        return try {
+            val snapshot = docRef.get().await()
+            val payload = mutableMapOf<String, Any>(
+                "titre" to cours.titre.trim().ifBlank { "Cours IA" }.take(150),
+                "resume" to cours.resume.trim().take(1000),
+                "notesEtudiant" to cours.notesEtudiant.trim().take(5000),
+                "coursOriginalId" to (cours.coursOriginalId ?: "").take(100),
+                "coursOriginalTitre" to cours.coursOriginalTitre.take(150),
+                "photoLocaleUri" to cours.photoLocaleUri.take(500),
+                "contenuCours" to cours.contenuCours.take(20000),
+                "quizJson" to cours.quizJson.take(20000),
+                "scoreDernierQuiz" to cours.scoreDernierQuiz.coerceIn(0, 1000),
+                "totalQuestionsQuiz" to cours.totalQuestionsQuiz.coerceIn(0, 1000),
+                "quizPasse" to cours.quizPasse,
+                "updatedAt" to FieldValue.serverTimestamp()
+            )
+            if (snapshot.exists()) {
+                docRef.update(payload).await()
+            } else {
+                payload["userId"] = uid
+                payload["createdAt"] = FieldValue.serverTimestamp()
+                docRef.set(payload).await()
+            }
+            Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.WRITE, path)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteCoursGenereIa(coursId: String): Result<Unit> {
+        val uid = try {
+            requireUserId()
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
+        val path = "users/$uid/coursGeneresIa/$coursId"
+        return try {
+            db.collection("users").document(uid).collection("coursGeneresIa").document(coursId).delete().await()
+            Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.DELETE, path)
+            Result.failure(e)
+        }
+    }
+
     suspend fun deleteAllUserCloudData(): Result<Unit> {
         val uid = try {
             requireUserId()
@@ -288,6 +347,9 @@ class FirebaseSyncRepository(
 
             val devisSnaps = userDocRef.collection("devis").get().await()
             devisSnaps.documents.forEach { it.reference.delete().await() }
+
+            val coursSnaps = userDocRef.collection("coursGeneresIa").get().await()
+            coursSnaps.documents.forEach { it.reference.delete().await() }
 
             val oppSnaps = db.collection("opportunites").whereEqualTo("authorUid", uid).get().await()
             oppSnaps.documents.forEach { it.reference.delete().await() }

@@ -137,6 +137,43 @@
         "createdAt",
         "updatedAt"
       ]
+    },
+    "CoursGenereIa": {
+      "title": "CoursGenereIa",
+      "description": "AI-generated course and quiz based on photographed or written student notes.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "titre": { "type": "string" },
+        "resume": { "type": "string" },
+        "notesEtudiant": { "type": "string" },
+        "coursOriginalId": { "type": "string" },
+        "coursOriginalTitre": { "type": "string" },
+        "photoLocaleUri": { "type": "string" },
+        "contenuCours": { "type": "string" },
+        "quizJson": { "type": "string" },
+        "scoreDernierQuiz": { "type": "integer", "minimum": 0 },
+        "totalQuestionsQuiz": { "type": "integer", "minimum": 0 },
+        "quizPasse": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "titre",
+        "resume",
+        "notesEtudiant",
+        "coursOriginalId",
+        "coursOriginalTitre",
+        "photoLocaleUri",
+        "contenuCours",
+        "quizJson",
+        "scoreDernierQuiz",
+        "totalQuestionsQuiz",
+        "quizPasse",
+        "createdAt",
+        "updatedAt"
+      ]
     }
   },
   "firestore": {
@@ -151,6 +188,10 @@
     "/users/{userId}/devis/{devisId}": {
       "schema": { "$ref": "#/entities/DevisArtisan" },
       "description": "Private owner-only quotes and receipts."
+    },
+    "/users/{userId}/coursGeneresIa/{coursId}": {
+      "schema": { "$ref": "#/entities/CoursGenereIa" },
+      "description": "Private student-only AI-generated courses and quizzes."
     },
     "/opportunites/{oppId}": {
       "schema": { "$ref": "#/entities/Opportunite" },

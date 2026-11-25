@@ -410,3 +410,33 @@ data class SyncOutboxEntity(
     val retryCount: Int = 0,
     val status: String = SyncStatus.PENDING_UPLOAD
 )
+
+@Entity(
+    tableName = "cours_generes_ia",
+    foreignKeys = [
+        ForeignKey(
+            entity = UtilisateurEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["utilisateurId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("utilisateurId")]
+)
+data class CoursGenereIaEntity(
+    @PrimaryKey val id: String,
+    val utilisateurId: String,
+    val titre: String,
+    val resume: String = "",
+    val notesEtudiant: String = "",
+    val coursOriginalId: String? = null,
+    val coursOriginalTitre: String = "",
+    val photoLocaleUri: String = "",
+    val contenuCours: String = "",
+    val quizJson: String = "",
+    val scoreDernierQuiz: Int = 0,
+    val totalQuestionsQuiz: Int = 0,
+    val quizPasse: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis(),
+    val syncStatus: String = SyncStatus.PENDING_UPLOAD
+)

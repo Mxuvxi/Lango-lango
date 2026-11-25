@@ -96,4 +96,55 @@ class LangoAiRepository {
             throw e
         }
     }
+
+    suspend fun generateCourseFromNotes(noteText: String, imageBytes: ByteArray?): String {
+        return withTimeout(AI_TIMEOUT_MS) {
+            val response = model.generateContent(
+                content {
+                    text(
+                        """
+                        Agis en tant que tuteur et professeur expert. Analyse les notes d'étudiant fournies (texte et/ou image) et génère un module de cours et quiz complet au format structuré lisible :
+                        Titre du cours: [Titre]
+                        Résumé: [Résumé]
+                        ETAPES:
+                        1. [Titre étape] | [Explication claire et pédagogique] | [Conseil pratique]
+                        2. ...
+                        QUIZ:
+                        Q1: [Question]
+                        Options: A) [...] B) [...] C) [...]
+                        ReponseCorrecte: [Index 0, 1 ou 2]
+                        Explication: [Pourquoi c'est la bonne réponse]
+                        Notes de l'étudiant: $noteText
+                        """.trimIndent()
+                    )
+                    if (imageBytes != null) {
+                        val bmp = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        if (bmp != null) {
+                            image(bmp)
+                        }
+                    }
+                }
+            )
+            response.text ?: "Impossible de générer le cours à partir des notes fournies."
+        }
+    }
+
+    suspend fun explainQuizMistake(question: String, selectedOption: String, correctOption: String): String {
+        return withTimeout(AI_TIMEOUT_MS) {
+            val response = model.generateContent(
+                content {
+                    text(
+                        """
+                        Un étudiant vient de faire une erreur à un quiz. Analyse son erreur de manière bienveillante et personnalisée pour l'aider à progresser :
+                        Question : $question
+                        Réponse choisie par l'étudiant : $selectedOption
+                        Bonne réponse attendue : $correctOption
+                        Explique clairement pourquoi sa réponse est incorrecte, quelle est la notion clé à retenir, et donne un conseil d'apprentissage adapté.
+                        """.trimIndent()
+                    )
+                }
+            )
+            response.text ?: "Erreur d'analyse par l'IA."
+        }
+    }
 }
